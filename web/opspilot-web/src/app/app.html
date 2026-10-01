@@ -1,0 +1,104 @@
+<div class="shell">
+  <header class="topbar">
+    <div class="brand">OpsPilot <small>ops assistant</small></div>
+    <label class="who">
+      Signed in as
+      <select [value]="user().name" (change)="selectUser($any($event.target).value)">
+        @for (u of users; track u.name) {
+          <option [value]="u.name">{{ u.label }}</option>
+        }
+      </select>
+    </label>
+  </header>
+
+  @if (me(); as m) {
+    <div class="identity">
+      <span class="label">Roles:</span>
+      @for (r of m.roles; track r) {
+        <span class="chip role">{{ r }}</span>
+      } @empty {
+        <span class="muted">none</span>
+      }
+      <span class="label">Tools:</span>
+      @for (t of m.tools; track t) {
+        <span class="chip tool">{{ t }}</span>
+      } @empty {
+        <span class="muted">none</span>
+      }
+    </div>
+  }
+
+  @if (error()) {
+    <div class="banner error">{{ error() }}</div>
+  }
+
+  <section class="chat" #scroller>
+    @for (t of turns(); track $index) {
+      <article class="turn">
+        <div class="question">{{ t.question }}</div>
+
+        @if (t.tools.length) {
+          <div class="tools">
+            @for (tool of t.tools; track $index) {
+              <span class="chip tool" [title]="json(tool.arguments)">🔧 {{ tool.name }}</span>
+            }
+          </div>
+        }
+
+        <div class="answer">{{ t.answer }}@if (t.status === 'streaming') {<span class="cursor">▍</span>}</div>
+
+        @if (t.citations.length) {
+          <div class="sources">
+            <strong>Sources</strong>
+            <ul>
+              @for (c of t.citations; track c.id) {
+                <li>
+                  <strong>[{{ c.id }}]</strong> {{ c.source }} — {{ c.heading }}
+                  <p>{{ c.snippet }}</p>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+
+        @if (t.unknownCitations.length) {
+          <div class="banner warn">
+            Answer cited unknown sources: {{ t.unknownCitations.join(', ') }}
+          </div>
+        }
+
+        @if (t.status === 'error') {
+          <div class="banner error">{{ t.error }}</div>
+        }
+
+        @if (t.usage; as u) {
+          <div class="meta">tokens: {{ u.inputTokens ?? '?' }} in / {{ u.outputTokens ?? '?' }} out</div>
+        }
+      </article>
+    } @empty {
+      <div class="empty">
+        <h2>Ask OpsPilot something</h2>
+        <div class="suggestions">
+          @for (s of suggestions; track s) {
+            <button type="button" (click)="send(s)" [disabled]="busy()">{{ s }}</button>
+          }
+        </div>
+      </div>
+    }
+  </section>
+
+  <form class="composer" (submit)="$event.preventDefault(); send()">
+    <textarea
+      rows="2"
+      placeholder="Ask about orders, payments, inventory… (Enter to send, Shift+Enter for newline)"
+      [value]="draft()"
+      (input)="draft.set($any($event.target).value)"
+      (keydown.enter)="onEnter($event)"
+    ></textarea>
+    @if (busy()) {
+      <button type="button" class="stop" (click)="stop()">Stop</button>
+    } @else {
+      <button type="submit" [disabled]="!draft().trim()">Send</button>
+    }
+  </form>
+</div>

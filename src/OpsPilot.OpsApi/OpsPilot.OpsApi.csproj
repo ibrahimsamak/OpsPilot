@@ -4,6 +4,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Same as the Orchestrator so both trust the dotnet user-jwts signing key -->
+    <UserSecretsId>955672a8-94e8-45f7-92eb-b5b2fb8e115a</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

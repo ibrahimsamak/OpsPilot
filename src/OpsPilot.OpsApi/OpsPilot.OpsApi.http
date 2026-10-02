@@ -1,6 +1,40 @@
-@OpsPilot.OpsApi_HostAddress = http://localhost:5082
+@ops = http://localhost:5101
+@viewer = PASTE_ALICE_TOKEN_HERE
+@operator = PASTE_BOB_TOKEN_HERE
 
-GET {{OpsPilot.OpsApi_HostAddress}}/weatherforecast/
-Accept: application/json
+### Order 123 (gateway_timeout x2)
+GET {{ops}}/orders/123
+Authorization: Bearer {{viewer}}
 
-###
+### Failures in the last 24 h
+GET {{ops}}/payments/failures?sinceHours=24
+Authorization: Bearer {{viewer}}
+
+### Stock for DK-900 (low stock)
+GET {{ops}}/inventory/DK-900
+Authorization: Bearer {{viewer}}
+
+### Viewer tries to reserve -> 403
+POST {{ops}}/inventory/DK-900/reservations
+Authorization: Bearer {{viewer}}
+Content-Type: application/json
+
+{ "quantity": 1, "orderId": 123, "reason": "test" }
+
+### Operator reserves 1 -> 200
+POST {{ops}}/inventory/DK-900/reservations
+Authorization: Bearer {{operator}}
+Content-Type: application/json
+
+{ "quantity": 1, "orderId": 123, "reason": "manual test" }
+
+### Over-reserve -> 409
+POST {{ops}}/inventory/DK-900/reservations
+Authorization: Bearer {{operator}}
+Content-Type: application/json
+
+{ "quantity": 40, "orderId": 123, "reason": "should fail" }
+
+### Retry fraud order -> 409
+POST {{ops}}/orders/142/payments/retry
+Authorization: Bearer {{operator}}

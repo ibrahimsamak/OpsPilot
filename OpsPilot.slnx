@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/OpsPilot.OpsApi/OpsPilot.OpsApi.csproj" />
     <Project Path="src/OpsPilot.Orchestrator/OpsPilot.Orchestrator.csproj" />
     <Project Path="src/OpsPilot.ServiceDefaults/OpsPilot.ServiceDefaults.csproj" />
   </Folder>

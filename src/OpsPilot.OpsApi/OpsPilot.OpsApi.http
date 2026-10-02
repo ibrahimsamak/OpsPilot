@@ -1,0 +1,6 @@
+@OpsPilot.OpsApi_HostAddress = http://localhost:5082
+
+GET {{OpsPilot.OpsApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

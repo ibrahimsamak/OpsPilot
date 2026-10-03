@@ -484,3 +484,5 @@ $RECYCLE.BIN/
 # OpsPilot
 web/opspilot-web/src/app/dev-tokens.ts
 *.env
+# local dev logs
+logs/

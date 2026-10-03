@@ -8,7 +8,7 @@ public sealed class KnowledgeDbContextFactory : IDesignTimeDbContextFactory<Know
     public KnowledgeDbContext CreateDbContext(string[] args) =>
         new(new DbContextOptionsBuilder<KnowledgeDbContext>()
             .UseNpgsql(
-                "Host=localhost;Port=5432;Database=aidb;Username=opspilot;Password=opspilot_dev",
+                "Host=localhost;Port=5433;Database=aidb;Username=opspilot;Password=opspilot_dev",
                 npgsql => npgsql.UseVector())
             .Options);
 }

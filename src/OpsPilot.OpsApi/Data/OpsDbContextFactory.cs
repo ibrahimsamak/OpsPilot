@@ -7,6 +7,6 @@ public sealed class OpsDbContextFactory : IDesignTimeDbContextFactory<OpsDbConte
 {
     public OpsDbContext CreateDbContext(string[] args) =>
         new(new DbContextOptionsBuilder<OpsDbContext>()
-            .UseNpgsql("Host=localhost;Port=5432;Database=opsdb;Username=opspilot;Password=opspilot_dev")
+            .UseNpgsql("Host=localhost;Port=5433;Database=opsdb;Username=opspilot;Password=opspilot_dev")
             .Options);
 }

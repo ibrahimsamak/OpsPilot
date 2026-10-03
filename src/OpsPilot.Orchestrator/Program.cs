@@ -2,7 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using OpsPilot.Orchestrator.AI;
 using OpsPilot.Orchestrator.Chat;
 using OpsPilot.Orchestrator.Knowledge;
+using OpsPilot.Orchestrator.Ops;
 using OpsPilot.Orchestrator.Telemetry;
+using OpsPilot.Orchestrator.Tools;
 using OpsPilot.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,6 +30,20 @@ builder.Services.AddScoped<IngestionService>();
 builder.Services.AddScoped<ChatOrchestrator>();
 
 
+builder.Services.AddTransient<ForwardUserTokenHandler>();
+builder.Services.AddHttpClient<OpsApiClient>(client =>
+    {
+        client.BaseAddress = new Uri(builder.Configuration["OpsApi:BaseUrl"] ?? "http://localhost:5101/");
+        client.Timeout = TimeSpan.FromSeconds(15);
+    })
+    .AddHttpMessageHandler<ForwardUserTokenHandler>();
+builder.Services.AddScoped<OpsTools>();
+
+builder.Services.AddScoped<ChatOrchestrator>();
+
+
+
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -49,5 +65,6 @@ app.UseAuthorization();
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 app.MapChatEndpoints();
 app.MapKnowledgeEndpoints();
+
 
 app.Run();
